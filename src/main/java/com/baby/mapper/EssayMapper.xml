@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.baby.dao.EssayMapper">
+	<resultMap type="com.baby.entity.ReclassType" id="reclassifyMap">
+		<id column="tid" jdbcType="INTEGER" property="tid" />
+		<result column="title" jdbcType="CHAR" property="title"/>
+		<result column="preread" jdbcType="VARCHAR" property="preread"/>
+		<collection property="tagName" resultMap="tagMap">
+		</collection>
+	</resultMap>
+	<resultMap type="com.baby.entity.EssayTag" id="tagMap">
+		<!-- <id column="tag_id" property="tagId" jdbcType="INTEGER"/> -->
+		<result column="tag_name" property="tagName" jdbcType="CHAR"/>
+	</resultMap>
+	
+	
+	<select id="getEssayInfoTen" resultType="com.baby.entity.ShowInMain">
+		select essay.tid, essay_type.etype, essay.title from essay, essay_type 
+			where essay.type_id = essay_type.etype_id ORDER BY essay.eclick DESC LIMIT 0, 10
+	</select>
+	
+	<select id="getEssayById" resultType="com.baby.entity.Essay" parameterType="Integer">
+		select essay.tid, essay.title, essay.preread, et.etype, ust.ustate, essay.ecomtent, 
+			essay.etime, essay.mid, essay.eclick, essay.good, essay.collection, essay.img, essay.estate 
+			from essay, essay_type as et, user_state_type as ust 
+			where tid=#{_parameter} and et.etype_id = essay.type_id and essay.ustate_id = ust.ustate_id
+	</select>
+	
+	<update id="addClick">
+		update essay set eclick = eclick+1
+	</update>
+	
+	<select id="findEssay" resultType="com.baby.entity.ResearchType" parameterType="String">
+		select tid, title, preread, etime from essay where title like "%"#{_parameter}"%" ORDER BY etime and eclick desc
+	</select>
+	
+	<select id="findEssayOne" resultType="com.baby.entity.Essay">
+		select * from essay order by good DESC, eclick DESC limit 0,1
+	</select>
+	
+	<select id="findEssayTwo" resultType="com.baby.entity.Essay">
+		select * from essay order by good DESC, eclick DESC limit 1,1
+	</select>
+	
+	<select id="findEssayThree" resultType="com.baby.entity.Essay">
+		select * from essay order by good DESC, eclick DESC limit 2,1
+	</select>
+	
+	<select id="findEssayFour" resultType="com.baby.entity.Essay">
+		select * from essay order by good DESC, eclick DESC limit 3,1
+	</select>
+	
+	<select id="findEssayFive" resultType="com.baby.entity.Essay">
+		select * from essay order by good DESC, eclick DESC limit 4,1
+	</select>
+	
+	<select id="findEssaySix" resultType="com.baby.entity.Essay">
+		select * from essay order by good DESC, eclick DESC limit 5,1
+	</select>
+	
+	<select id="findEssaySeven" resultType="com.baby.entity.Essay">
+		select * from essay order by good DESC, eclick DESC limit 6,1
+	</select>
+	
+	<select id="findEssayEight" resultType="com.baby.entity.Essay">
+		select * from essay order by good DESC, eclick DESC limit 7,1
+	</select>
+	
+	<select id="findEssayNine" resultType="com.baby.entity.Essay">
+		select * from essay order by good DESC, eclick DESC limit 8,1
+	</select>
+	
+	<select id="findEssayTen" resultType="com.baby.entity.Essay">
+		select * from essay order by good DESC, eclick DESC limit 9,1
+	</select>
+	
+	<select id="findEssayByTS" resultMap="reclassifyMap">
+		select tid, title, preread,tag_name from essay, essay_tag where tid = tag_id and type_id = #{tid} and ustate_id = #{sid}
+	</select>
+	
+	<select id="findEssayByTSAndGood" resultType="com.baby.entity.ResearchType">
+			select tid,title,preread,etime from essay where type_id = #{tid} and ustate_id = #{sid} order by good DESC limit 0,5
+	</select>
+	
+	<select id="manageEssay" resultType="com.baby.entity.EssayManage">
+		select tid, title, etype, ustate, etime, mid, eclick, good, collection
+			from essay, essay_type, user_state_type
+			where essay.ustate_id = user_state_type.ustate_id and essay.type_id = essay_type.etype_id and essay.estate = 1
+			ORDER BY etime DESC
+	</select>
+	
+	<select id="addEssay">
+		INSERT INTO `essay` (`title`, `preread`, `type_id`, `ustate_id`, `ecomtent`, `etime`, `mid`) VALUES (#{title}, #{pre}, #{type}, #{state}, #{context}, #{time}, #{mid})
+	</select>
+	
+	<select id="findEssayByIdManage" parameterType="int" resultType="com.baby.entity.Essay">
+		select tid, title, preread, etype, ustate, etime, mid, eclick, good, collection
+			from essay, essay_type, user_state_type
+			where essay.ustate_id = user_state_type.ustate_id and essay.type_id = essay_type.etype_id 
+			and essay.estate = 1 and tid = #{_parameter}
+	</select>
+	
+	<select id="updateEssay">
+		UPDATE `essay` 
+		SET `title`=#{title}, `preread`=#{pre}, `type_id`=#{type}, `ustate_id`=#{state}, `ecomtent`=#{context}, `etime`=#{time}, `mid`=#{mid} 
+		WHERE (`tid`=#{tid})
+	</select>
+</mapper>

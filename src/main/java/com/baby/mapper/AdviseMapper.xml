@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.baby.dao.AdviseMapper">
+	<select id="findNewQues" resultType="com.baby.entity.AdviseUse">
+		select aid, atitle, etype, ustate, advise.date, er.uid, er.nickname, eri.portrait
+			from advise, user_state_type as ust, essay_type as et, `user` as er, user_state as eri
+			where er.uid = advise.uid and eri.uid = advise.uid 
+			and advise.astate_id = ust.ustate_id and advise.etype_id = et.etype_id and aid not in (
+			select aid from advise_reply) ORDER BY advise.date DESC LIMIT 0,7;
+	</select>
+	<select id="findNewReply" resultType="com.baby.entity.AdviseUse">
+		select advise.aid, atitle, etype, ustate, advise.date, er.uid, er.nickname, eri.portrait, COUNT(ar.aid) as renum
+		from advise, user_state_type as ust, essay_type as et, `user` as er, user_state as eri, advise_reply as ar
+		where er.uid = advise.uid and eri.uid = advise.uid 
+		and advise.astate_id = ust.ustate_id and advise.etype_id = et.etype_id and ar.aid = advise.aid
+		GROUP BY ar.aid ORDER BY ar.date DESC;
+	</select>
+	
+	<select id="findAdById" resultType="com.baby.entity.Advise" parameterType="Integer">
+		select * from advise where aid=#{_parameter}
+	</select>
+	
+	<select id="findReById" resultType="com.baby.entity.AdviseReply" parameterType="Integer">
+		select *,`user`.nickname, user_state.portrait from advise_reply,`user`,user_state
+		where aid=#{_parameter} and `user`.uid = advise_reply.uid and advise_reply.uid = user_state.uid
+	</select>
+	
+	<select id="classifyNewQues" resultType="com.baby.entity.AdviseCla" parameterType="Integer">
+		select advise.aid, atitle, advise.date,u.uid, u.nickname, eri.portrait, COUNT(ar.aid) as renum
+		from advise LEFT JOIN advise_reply as ar ON (ar.aid = advise.aid) LEFT JOIN `user` as u ON (advise.uid = u.uid) LEFT JOIN user_state as eri ON (eri.uid = advise.uid) 
+		where advise.best_rid = 0 and advise.etype_id = #{_parameter}
+		GROUP BY advise.aid ORDER BY advise.date DESC;
+	</select>
+	
+	<select id="classifyNewRe" resultType="com.baby.entity.Advise" parameterType="Integer">
+		select * from advise where best_rid=1 and etype_id =#{_parameter} ORDER BY date DESC;
+	</select>
+	
+	<insert id="addAdvise">
+		INSERT INTO `advise` (`atitle`, `acontent`, `etype_id`, `astate_id`, `date`, `uid`) VALUES (#{title}, #{con}, #{state}, #{type}, #{date}, #{uid})
+	</insert>
+	
+	<insert id="addReply">
+		INSERT INTO `advise_reply` (`aid`, `con`, `date`, `uid`) VALUES (#{aid}, #{con}, #{time}, #{uid})
+	</insert>
+</mapper>

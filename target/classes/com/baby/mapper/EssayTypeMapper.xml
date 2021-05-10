@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.baby.dao.EssayTypeMapper">
+	<select id="getEssayType" resultType="String" parameterType="Integer">
+		select etype from essay_type where etype_id = #{_parameter}
+	</select>
+	
+	<select id="getTypeName" resultType="String" parameterType="Integer">
+		select etype from essay_type where etype_id = #{parameter}
+	</select>
+	
+	<select id="getStateName" resultType="String" parameterType="Integer">
+		select ustate from user_state_type where ustate_id = #{parameter}
+	</select>
+</mapper>
